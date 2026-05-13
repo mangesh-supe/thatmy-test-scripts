@@ -1,4 +1,4 @@
-# thatmy-test-scripts
+# thatmy-web-hosting-test-scripts
 Open-source test scripts for WordPress hosting benchmarks : k6 load testing, WebPageTest batch runner, PassMark CPU lookup, and data aggregation. MIT licensed.
 
 Same scripts behind every benchmark published at [thatmy.com](https://thatmy.com). Use them to reproduce our results, test your own hosts, or adapt them for your own benchmarking workflow.
