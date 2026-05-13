@@ -140,62 +140,121 @@ node data/aggregate-results.js \
 
 ---
 
-## How We Run Monthly Tests
+## How We Use These Scripts
 
-1. **Setup** — Install identical WordPress test sites (same plugins, theme, content) on each host
-2. **WebPageTest** — Run `batch-test.js` against all hosts from Dulles VA (9 runs each)
-3. **Load test** — Run k6 at 50, 100, and 250 concurrent users per host
-4. **CPU verification** — SSH into each host, run `lscpu`, look up on PassMark
-5. **Aggregation** — Merge everything with `aggregate-results.js`
-6. **Analysis** — Calculate percentiles, identify trends, update benchmark pages
+Our monthly testing workflow:
 
-**Total time:** 4–6 hours per monthly cycle.
+1. **Setup:** Create test WordPress install on each host (identical plugins, content, theme)
+2. **WebPageTest:** Run batch-test.js against all hosts from Dulles VA (9 runs each)
+3. **Load test:** Run k6 load test (50, 100, 250 concurrent users) against each host
+4. **CPU verification:** SSH into each host, run `lscpu`, look up on PassMark
+5. **Aggregation:** Combine all results into unified CSV
+6. **Analysis:** Calculate percentiles, identify trends, update benchmark pages
 
----
+Total time: 4-6 hours per monthly test cycle
 
 ## Reproducing Our Benchmarks
 
-To verify published TTFB data or run against your own hosts:
+To verify our TTFB data or run against your own hosts:
 
-1. Clone this repo
-2. Add your sites to `hosts.json`
-3. Get a free WebPageTest API key
-4. Run `batch-test.js` for page speed metrics
-5. Run `k6` for load test metrics
-6. Aggregate with `aggregate-results.js`
-7. Compare against our published data at [thatmy.com/wordpress-hosting-benchmarks](https://thatmy.com/wordpress-hosting-benchmarks/)
+1. **Clone the repo:**
+   ```bash
+   git clone https://github.com/mangeshsupe/thatmy-test-scripts.git
+   cd thatmy-test-scripts
+   ```
 
----
+2. **Install dependencies:**
+   ```bash
+   npm install && brew install k6
+   ```
 
-## Customization
+3. **Get WebPageTest key:**
+   Free account at [webpagetest.org](https://webpagetest.org)
 
-**Your own site:** Fork the repo, update `hosts.json`, run tests, compare against our public data.
+4. **Create hosts.json:**
+   ```json
+   [
+     "https://yourhost1.com",
+     "https://yourhost2.com",
+     "https://yourhost3.com"
+   ]
+   ```
 
-**Different WordPress versions:** Swap out the test install (WP 6.4, 6.6, etc.) and run a full cycle to see version impact.
+5. **Run batch-test.js:**
+   ```bash
+   node webpagetest/batch-test.js \
+     --api-key YOUR_KEY \
+     --hosts hosts.json \
+     --location Dulles_VA \
+     --runs 9
+   ```
 
-**Non-WordPress platforms:** Adapt the k6 script for any URL; `batch-test.js` works against any web application.
+6. **Run k6 script:**
+   ```bash
+   k6 run k6/wordpress-load-test.js \
+     --vus 100 \
+     --duration 60s \
+     -e TARGET_URL=https://yourhost.com
+   ```
 
----
+7. **Compare results:**
+   See how your host stacks up against the benchmarked providers.
+
+Full instructions in repository README.
+
+## Customizing for Your Use Case
+
+### Testing your own site:
+- Fork the repo
+- Update `hosts.json` with your site URL
+- Run load tests to benchmark against public data
+- Use k6 to test your own performance optimization efforts
+
+### Testing different WordPress versions:
+- Modify the test WordPress install to use WordPress 6.4, 6.6, etc.
+- Run full test cycle to see version impact on performance
+
+### Testing non-WordPress platforms:
+- Adapt k6 script to target different URLs/endpoints
+- Use WebPageTest batch runner on any web application
+
+## Requirements
+
+**Software:**
+- Node.js 18+ (for batch and aggregation scripts)
+- k6 (for load testing)
+- WebPageTest API key (free account at webpagetest.org)
+
+**Hardware:**
+- Laptop or desktop with 8GB+ RAM
+- Stable internet connection (load tests generate 50Mbps+ traffic)
+
+**Cost:**
+- Free (WebPageTest free tier: 200 tests/day)
+- Optional: Paid WebPageTest plan for unlimited tests ($99+/month)
+
+## License & Attribution
+
+These scripts are published under the **MIT License**. You're free to:
+
+- **Use:** Run them against your own hosts
+- **Modify:** Adapt for different testing scenarios
+- **Distribute:** Share modified versions
+- **Commercialize:** Use for commercial testing services
+
+**Attribution appreciated but not required:** If you use these scripts for published benchmarks, a link back to thatmy.com/how-we-test is appreciated.
+
+## Support & Issues
+
+Questions or issues with the scripts?
+
+- **GitHub Issues:** File a bug report at the [repository](https://github.com/mangeshsupe/thatmy-test-scripts/issues)
+- **Email:** [mangesh@thatmy.com](mailto:mangesh@thatmy.com)
 
 ## Related Resources
 
-- [Testing Methodology](https://thatmy.com/how-we-test/) — Full explanation of test conditions, hardware, and controls
-- [WordPress Hosting Benchmarks](https://thatmy.com/wordpress-hosting-benchmarks/) — Monthly results using these scripts
-- [WebPageTest Docs](https://docs.webpagetest.org/) — Test configuration reference
-- [k6 Docs](https://k6.io/docs/) — Load testing framework guide
-- [PassMark CPU Benchmarks](https://www.cpubenchmark.net/) — CPU ranking database
-
----
-
-## License
-
-MIT License. You're free to use, modify, distribute, and commercialize these scripts without restriction.
-
-Attribution appreciated but not required. If you use these scripts for published benchmarks, a link back to [thatmy.com/how-we-test](https://thatmy.com/how-we-test/) is welcome.
-
----
-
-## Support
-
-- **GitHub Issues:** [File a bug report](https://github.com/mangeshsupe/thatmy-test-scripts/issues)
-- **Email:** mangesh@thatmy.com
+- [Complete Testing Methodology](https://thatmy.com/how-we-test/) — Full explanation of test conditions
+- [WordPress Hosting Benchmarks](https://thatmy.com/wordpress-hosting-benchmarks/) — Our monthly results using these scripts
+- [WebPageTest Documentation](https://www.webpagetest.org/) — Test configuration reference
+- [k6 Documentation](https://k6.io/docs/) — Load testing framework guide
+- [PassMark CPU Benchmarks](https://www.passmark.com/) — CPU ranking database
