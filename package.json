@@ -1,0 +1,39 @@
+{
+  "name": "thatmy-test-scripts",
+  "version": "1.0.0",
+  "description": "Open-source benchmarking scripts for WordPress hosting performance testing",
+  "main": "index.js",
+  "scripts": {
+    "test:webpagetest": "node webpagetest/batch-test.js",
+    "test:passmark": "node cpu/passmark-lookup.js",
+    "aggregate": "node data/aggregate-results.js"
+  },
+  "keywords": [
+    "wordpress",
+    "hosting",
+    "benchmarking",
+    "webpagetest",
+    "performance",
+    "load-testing",
+    "k6"
+  ],
+  "author": "Mangesh Supe <mangesh@thatmy.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mangeshsupe/thatmy-test-scripts.git"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "csv-writer": "^1.6.0",
+    "dotenv": "^16.0.0",
+    "yargs": "^17.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
